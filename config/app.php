@@ -197,6 +197,8 @@ return [
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\FakerServiceProvider::class,
 
+        App\Providers\ViewServiceProvider::class,
+
     ],
 
     /*

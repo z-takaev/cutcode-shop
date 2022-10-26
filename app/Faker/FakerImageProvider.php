@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class FakerImageProvider extends Base
 {
-    public function img($sourceDirectory, $targetDirectory): string
+    public function img(string $sourceDirectory, string $targetDirectory): string
     {
         $storageDirectory = 'images' . DIRECTORY_SEPARATOR . $targetDirectory;
 
