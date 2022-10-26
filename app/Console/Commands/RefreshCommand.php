@@ -5,11 +5,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class FreshCommand extends Command
+class RefreshCommand extends Command
 {
-    protected $signature = 'shop:fresh';
+    protected $signature = 'shop:refresh';
 
-    protected $description = 'Fresh database and seeds';
+    protected $description = 'Refresh database and seeds';
 
     public function handle()
     {
@@ -17,8 +17,9 @@ class FreshCommand extends Command
             return Command::FAILURE;
         }
 
-        Storage::deleteDirectory('products');
-        Storage::deleteDirectory('brands');
+        Storage::deleteDirectory('images');
+
+        Storage::makeDirectory('images');
 
         $this->call('migrate:fresh', ['--seed' => true]);
     }
