@@ -18,4 +18,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/password-recovery', 'passwordRecovery')->name('auth.password-recovery');
     Route::post('/password-update', 'passwordUpdate')->name('auth.password-update');
     Route::delete('/logout', 'logout')->name('auth.logout');
+
+    Route::get('/auth/github/redirect', 'github')->name('auth.github');
+
+    Route::get('/auth/github/callback', 'githubCallback');
 });

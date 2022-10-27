@@ -9,6 +9,7 @@
     @vite(['resources/css/app.css', 'resources/sass/main.sass', 'resources/js/app.js'])
 </head>
 <body class="antialiased">
+
 @auth()
     <form action="{{ route('auth.logout') }}" method="POST">
         @csrf
