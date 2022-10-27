@@ -3,10 +3,19 @@
 @section('title', 'Восстановление пароля')
 
 @section('content')
-    <x-auth.form title="Восстановление пароля">
+    @if($status = session('status'))
+        {{ $status }}
+    @endif
+
+    <x-auth.form title="Восстановление пароля" method="POST" action="{{ route('auth.password-recovery') }}">
         @csrf
 
-        <x-auth.text-field type="email" name="email" placeholder="E-mail"></x-auth.text-field>
+        <x-auth.text-field type="email" name="email" value="{{ old('email') }}" placeholder="E-mail"
+                           :isError="$errors->has('email')"></x-auth.text-field>
+        @error('email')
+        <x-auth.error>{{ $message }}</x-auth.error>
+        @enderror
+
         <x-auth.btn-primary>Восстановить</x-auth.btn-primary>
 
         <x-slot:links>

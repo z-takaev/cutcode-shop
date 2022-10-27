@@ -3,13 +3,26 @@
 @section('title', 'Вход в аккаунт')
 
 @section('content')
-    <x-auth.form title="Вход в аккаунт">
+    @if($status = session('status'))
+        {{ $status }}
+    @endif
+
+
+    <x-auth.form title="Вход в аккаунт" method="POST" action="{{ route('auth.authenticate') }}">
         @csrf
 
-        <x-auth.text-field type="email" name="email" placeholder="E-mail" :isError="true"></x-auth.text-field>
-        <x-auth.error>Текст ошибки</x-auth.error>
+        <x-auth.text-field type="email" name="email" value="{{ old('email') }}" placeholder="E-mail"
+                           :isError="$errors->has('email')"></x-auth.text-field>
+        @error('email')
+        <x-auth.error>{{ $message }}</x-auth.error>
+        @enderror
 
-        <x-auth.text-field type="password" name="password" placeholder="Пароль"></x-auth.text-field>
+        <x-auth.text-field type="password" name="password"
+                           placeholder="Пароль" :isError="$errors->has('password')"></x-auth.text-field>
+        @error('password')
+        <x-auth.error>{{ $message }}</x-auth.error>
+        @enderror
+
         <x-auth.btn-primary>Войти</x-auth.btn-primary>
 
         <x-slot:socialAuth>
