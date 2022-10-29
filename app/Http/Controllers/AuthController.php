@@ -20,6 +20,8 @@ class AuthController extends Controller
 {
     public function signIn()
     {
+        return redirect()->back();
+
         return view('auth.sign-in');
     }
 

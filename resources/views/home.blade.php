@@ -10,6 +10,11 @@
 </head>
 <body class="antialiased">
 
+@if($flash = flash()->get())
+    <div class="{{ $flash->classes() }}">{{ $flash->message()  }}</div>
+@endif
+
+
 @auth()
     <form action="{{ route('auth.logout') }}" method="POST">
         @csrf
