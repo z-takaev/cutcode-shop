@@ -20,8 +20,6 @@ class AuthController extends Controller
 {
     public function signIn()
     {
-        return redirect()->back();
-
         return view('auth.sign-in');
     }
 
@@ -97,9 +95,10 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
+        event(new Registered($user));
+
         Auth::login($user);
 
-        event(new Registered($user));
 
         return redirect()->intended(route('home'));
     }
