@@ -2,8 +2,12 @@
 
 namespace Tests\Feature\App\Http\Controllers;
 
-use App\Http\Controllers\AuthController;
-use App\Models\User;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\Auth\SignUpController;
+use Database\Factories\UserFactory;
+use Domain\Auth\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,8 +26,8 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->get(
             action([
-                AuthController::class,
-                'signIn'
+                SignInController::class,
+                'page'
             ])
         );
 
@@ -41,8 +45,8 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->get(
             action([
-                AuthController::class,
-                'signUp'
+                SignUpController::class,
+                'page'
             ])
         );
 
@@ -60,8 +64,8 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->get(
             action([
-                AuthController::class,
-                'forgotPassword'
+                ForgotPasswordController::class,
+                'page'
             ])
         );
 
@@ -79,8 +83,8 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->get(
             action([
-                AuthController::class,
-                'passwordReset'
+                ResetPasswordController::class,
+                'page'
             ])
         );
 
@@ -113,7 +117,10 @@ class AuthControllerTest extends TestCase
         );
 
         $response = $this->post(
-            action([AuthController::class, 'registration']),
+            action([
+                SignUpController::class,
+                'page'
+            ]),
             $user
         );
 
@@ -144,19 +151,19 @@ class AuthControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_authenticate_success(): void
+    public function it_login_success(): void
     {
         $password = '123456789';
 
-        $user = User::factory()->create([
+        $user = UserFactory::new()->create([
             'email' => 'testing@gmail.com',
             'password' => bcrypt($password)
         ]);
 
         $response = $this->post(
             action([
-                AuthController::class,
-                'authenticate'
+                SignInController::class,
+                'handle'
             ]),
             [
                 'email' => $user['email'],
@@ -177,12 +184,12 @@ class AuthControllerTest extends TestCase
      */
     public function it_logout_success(): void
     {
-        $user = User::factory()->create();
+        $user = UserFactory::new()->create();
 
         $this->actingAs($user)
             ->delete(
                 action([
-                    AuthController::class,
+                    SignInController::class,
                     'logout'
                 ])
             );

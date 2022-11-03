@@ -9,14 +9,8 @@
     @vite(['resources/css/app.css', 'resources/sass/main.sass', 'resources/js/app.js'])
 </head>
 <body class="antialiased">
-
-@if($flash = flash()->get())
-    <div class="{{ $flash->classes() }}">{{ $flash->message()  }}</div>
-@endif
-
-
 @auth()
-    <form action="{{ route('auth.logout') }}" method="POST">
+    <form action="{{ route('logout') }}" method="POST">
         @csrf
         @method('DELETE')
 

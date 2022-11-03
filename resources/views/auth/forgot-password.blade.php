@@ -7,7 +7,7 @@
         {{ $status }}
     @endif
 
-    <x-auth.form title="Восстановление пароля" method="POST" action="{{ route('auth.password-recovery') }}">
+    <x-auth.form title="Восстановление пароля" method="POST" action="{{ route('forgot-password.handle') }}">
         @csrf
 
         <x-auth.text-field type="email" name="email" value="{{ old('email') }}" placeholder="E-mail"
@@ -21,7 +21,7 @@
         <x-slot:links>
             <div class="text-xxs md:text-xs">
                 <a
-                    href="{{ route('auth.sign-in') }}"
+                    href="{{ route('login') }}"
                     class="text-white hover:text-white/70 font-bold">Вспомнил пароль</a>
             </div>
         </x-slot:links>

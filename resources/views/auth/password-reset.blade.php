@@ -3,7 +3,7 @@
 @section('title', 'Сброс пароля')
 
 @section('content')
-    <x-auth.form title="Сброс пароля" method="POST" action="{{ route('auth.password-update') }}">
+    <x-auth.form title="Сброс пароля" method="POST" action="{{ route('password.reset') }}">
         @csrf
 
         <input type="hidden" name="token" value="{{ $token }}">

@@ -3,7 +3,7 @@
 @section('title', 'Регистрация аккаунта')
 
 @section('content')
-    <x-auth.form title="Регистрация аккаунта" method="POST" action="{{ route('auth.registration') }}">
+    <x-auth.form title="Регистрация аккаунта" method="POST" action="{{ route('registration') }}">
         @csrf
 
         <x-auth.text-field type="text" name="name" value="{{ old('name') }}" placeholder="Имя"
@@ -27,7 +27,7 @@
         <x-slot:links>
             <div class="text-xxs md:text-xs">
                 <a
-                    href="{{ route('auth.sign-in') }}"
+                    href="{{ route('login') }}"
                     class="text-white hover:text-white/70 font-bold">Уже есть аккаунт?</a>
             </div>
         </x-slot:links>

@@ -10,6 +10,11 @@
 </head>
 <body>
 
+@if($flash = flash()->get())
+    <div class="{{ $flash->classes() }}">{{ $flash->message()  }}</div>
+@endif
+
+
 <main class="py-16 lg:py-20">
     <div class="container">
         @yield('content')

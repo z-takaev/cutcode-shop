@@ -8,7 +8,7 @@
     @endif
 
 
-    <x-auth.form title="Вход в аккаунт" method="POST" action="{{ route('auth.authenticate') }}">
+    <x-auth.form title="Вход в аккаунт" method="POST" action="{{ route('login') }}">
         @csrf
 
         <x-auth.text-field type="email" name="email" value="{{ old('email') }}" placeholder="E-mail"
@@ -26,7 +26,7 @@
         <x-auth.btn-primary>Войти</x-auth.btn-primary>
 
         <x-slot:socialAuth>
-            <a href="{{ route('auth.github') }}"
+            <a href="{{ route('socialite.redirect', ['driver' => 'github']) }}"
                class="relative flex items-center h-14 px-12 rounded-lg border border-[#A07BF0] bg-white/20 hover:bg-white/20 active:bg-white/10 active:translate-y-0.5">
                 <svg class="shrink-0 absolute left-4 w-5 sm:w-6 h-5 sm:h-6" xmlns="http://www.w3.org/2000/svg"
                      fill="currentColor" viewBox="0 0 20 20">
@@ -41,11 +41,11 @@
         <x-slot:links>
             <div class="text-xxs md:text-xs">
                 <a
-                    href="{{ route('auth.forgot-password') }}"
+                    href="{{ route('forgot-password') }}"
                     class="text-white hover:text-white/70 font-bold">Забыли пароль?</a>
             </div>
             <div class="text-xxs md:text-xs">
-                <a href="{{ route('auth.sign-up') }}"
+                <a href="{{ route('registration') }}"
                    class="text-white hover:text-white/70 font-bold">Регистрация</a>
             </div>
         </x-slot:links>
