@@ -3,13 +3,17 @@
 namespace Tests\Feature\App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use Database\Factories\UserFactory;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class ForgotPasswordControllerTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     /**
      * @test
      * @return void
@@ -27,5 +31,32 @@ class ForgotPasswordControllerTest extends TestCase
             ->assertOk()
             ->assertViewIs('auth.forgot-password')
             ->assertSee('Восстановление пароля');
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function it_forgot_password_success(): void
+    {
+        Notification::fake();
+
+        $user = UserFactory::new()->create([
+            'email' => 'testing@gmail.com'
+        ]);
+
+        $response = $this->post(
+            action([
+                ForgotPasswordController::class,
+                'handle'
+            ]),
+            ['email' => $user->email]
+        );
+
+        Notification::assertSentTo($user, ResetPassword::class);
+
+        $response
+            ->assertValid()
+            ->assertSessionHas('status', __(Password::RESET_LINK_SENT));
     }
 }
