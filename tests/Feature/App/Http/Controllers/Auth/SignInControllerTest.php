@@ -34,6 +34,29 @@ class SignInControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function it_sign_in_page_redirect_authorized_user(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $this->actingAs($user);
+
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->get(
+            action([
+                SignInController::class,
+                'page'
+            ])
+        );
+
+        $response
+            ->assertRedirect(route('home'));
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function it_login_success(): void
     {
         $password = '123456789';
@@ -65,6 +88,34 @@ class SignInControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function it_login_invalid_password(): void
+    {
+        $user = UserFactory::new()->create([
+            'email' => 'testing@gmail.com',
+            'password' => bcrypt('123456789')
+        ]);
+
+        $response = $this->post(
+            action([
+                SignInController::class,
+                'handle'
+            ]),
+            [
+                'email' => $user['email'],
+                'password' => '987654321'
+            ]
+        );
+
+        $this->assertGuest();
+
+        $response
+            ->assertInvalid(['email' => 'The provided credentials do not match our records.']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function it_logout_success(): void
     {
         $user = UserFactory::new()->create();
@@ -79,4 +130,5 @@ class SignInControllerTest extends TestCase
 
         $this->assertGuest();
     }
+
 }

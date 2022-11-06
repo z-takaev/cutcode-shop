@@ -37,6 +37,29 @@ class ForgotPasswordControllerTest extends TestCase
      * @test
      * @return void
      */
+    public function it_forgot_password_page_redirect_authorized_user(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $this->actingAs($user);
+
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->get(
+            action([
+                ForgotPasswordController::class,
+                'page'
+            ])
+        );
+
+        $response
+            ->assertRedirect(route('home'));
+    }
+
+    /**
+     * @test
+     * @return void
+     */
     public function it_forgot_password_success(): void
     {
         Notification::fake();
@@ -58,5 +81,23 @@ class ForgotPasswordControllerTest extends TestCase
         $response
             ->assertValid()
             ->assertSessionHas('status', __(Password::RESET_LINK_SENT));
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function it_forgot_password_invalid_email(): void
+    {
+        $response = $this->post(
+            action([
+                ForgotPasswordController::class,
+                'handle'
+            ]),
+            ['email' => 'testing@gmail.com']
+        );
+
+        $response
+            ->assertInvalid(['email' => "We can't find a user with that email address."]);
     }
 }

@@ -18,23 +18,23 @@ class AuthRegistrar implements RouteRegistrar
     {
         Route::middleware('web')->group(function () {
             Route::controller(SignInController::class)->group(function () {
-                Route::get('/login', 'page')->name('login');
+                Route::get('/login', 'page')->name('login')->middleware('guest');
                 Route::post('/login', 'handle')->name('login.handle');
                 Route::delete('/logout', 'logout')->name('logout');
             });
 
             Route::controller(SignUpController::class)->group(function () {
-                Route::get('/registration', 'page')->name('registration');
+                Route::get('/registration', 'page')->name('registration')->middleware('guest');
                 Route::post('/registration', 'handle')->name('registration.handle');
             });
 
             Route::controller(ForgotPasswordController::class)->group(function () {
-                Route::get('/forgot-password', 'page')->name('forgot-password');
+                Route::get('/forgot-password', 'page')->name('forgot-password')->middleware('guest');
                 Route::post('/forgot-password', 'handle')->name('forgot-password.handle');
             });
 
             Route::controller(ResetPasswordController::class)->group(function () {
-                Route::get('/password-reset', 'page')->name('password-reset');
+                Route::get('/password-reset', 'page')->name('password-reset')->middleware('guest');
                 Route::post('/password-reset', 'handle')->name('password.reset');
             });
 

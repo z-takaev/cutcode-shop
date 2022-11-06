@@ -3,6 +3,7 @@
 namespace Tests\Feature\App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\SignUpController;
+use Database\Factories\UserFactory;
 use Domain\Auth\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -31,6 +32,29 @@ class SignUpControllerTest extends TestCase
             ->assertOk()
             ->assertViewIs('auth.sign-up')
             ->assertSee('Регистрация аккаунта');
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function it_sign_up_page_redirect_authorized_user(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $this->actingAs($user);
+
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->get(
+            action([
+                SignUpController::class,
+                'page'
+            ])
+        );
+
+        $response
+            ->assertRedirect(route('home'));
     }
 
     /**
@@ -86,4 +110,46 @@ class SignUpControllerTest extends TestCase
             ->assertRedirect(route('home'));
     }
 
+    /**
+     * @test
+     * @return void
+     */
+    public function it_registration_invalid_form_data(): void
+    {
+        $response = $this->post(
+            action([
+                SignUpController::class,
+                'page'
+            ]),
+            []
+        );
+
+        $response
+            ->assertInvalid(['name', 'email', 'password']);
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function it_registration_password_confirmation_fail(): void
+    {
+        $user = [
+            'name' => 'testing',
+            'email' => 'testing@gmail.com',
+            'password' => '123456789',
+            'password_confirmation' => '987654321',
+        ];
+
+        $response = $this->post(
+            action([
+                SignUpController::class,
+                'page'
+            ]),
+            $user
+        );
+
+        $response
+            ->assertInvalid(['password']);
+    }
 }
