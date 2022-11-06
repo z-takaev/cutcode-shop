@@ -9,7 +9,9 @@ trait HasSlug
     protected static function bootHasSlug(): void
     {
         static::creating(function (Model $item) {
-            $item->slug = self::generateUniqSlug($item->slug ?? str($item->{self::fromSlug()})->slug());
+            $slug = $item->{self::slugName()} ?? str($item->{self::fromSlug()})->slug();
+
+            $item->{self::slugName()} = $item->uniqSlug($slug);
         });
     }
 
@@ -18,14 +20,22 @@ trait HasSlug
         return 'name';
     }
 
-    static private function generateUniqSlug(string $slug): string
+    static protected function slugName(): string
     {
-        $record = self::query()->where('slug', $slug)->first();
+        return 'slug';
+    }
 
-        if (!$record) {
-            return $slug;
+    protected function uniqSlug(string $slug): string
+    {
+        $index = 1;
+        $uniqSlug = $slug;
+
+        while ($this->where(self::slugName(), $uniqSlug)->first()) {
+            $uniqSlug = "{$slug}-{$index}";
+
+            $index++;
         }
 
-        return self::generateUniqSlug($slug . '-' . uniqid());
+        return $uniqSlug;
     }
 }
