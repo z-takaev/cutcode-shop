@@ -12,7 +12,7 @@ class Brand extends Model
     use HasFactory;
     use HasSlug;
 
-    protected $fillable = ['slug', 'name', 'thumbnail'];
+    protected $fillable = ['slug', 'name', 'thumbnail', 'sorting', 'on_home_page'];
 
     public function products(): HasMany
     {

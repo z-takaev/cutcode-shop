@@ -13,8 +13,8 @@ class Product extends Model
     use HasFactory;
     use HasSlug;
 
-    protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id'];
-    
+    protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id', 'sorting', 'on_home_page'];
+
     public function brands(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
