@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Models\HasSlug;
+use App\Traits\Models\HasThumbnail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ class Product extends Model
 {
     use HasFactory;
     use HasSlug;
+    use HasThumbnail;
 
     public function scopeHomepage($query)
     {
@@ -22,6 +24,11 @@ class Product extends Model
     }
 
     protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id', 'sorting', 'on_home_page'];
+
+    protected function thumbnailDir(): string
+    {
+        return 'products';
+    }
 
     public function brands(): BelongsTo
     {
