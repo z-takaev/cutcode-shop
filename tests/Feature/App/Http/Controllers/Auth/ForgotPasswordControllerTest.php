@@ -14,11 +14,18 @@ class ForgotPasswordControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function testingCredentials(): array
+    {
+        return [
+            'email' => 'testing@cutcode.ru'
+        ];
+    }
+
     /**
      * @test
      * @return void
      */
-    public function it_forgot_password_page_success(): void
+    public function it_page_success(): void
     {
         $response = $this->get(
             action([
@@ -37,30 +44,7 @@ class ForgotPasswordControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_forgot_password_page_redirect_authorized_user(): void
-    {
-        $user = UserFactory::new()->create();
-
-        $this->actingAs($user);
-
-        $this->assertAuthenticatedAs($user);
-
-        $response = $this->get(
-            action([
-                ForgotPasswordController::class,
-                'page'
-            ])
-        );
-
-        $response
-            ->assertRedirect(route('home'));
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function it_forgot_password_success(): void
+    public function it_handle_success(): void
     {
         Notification::fake();
 
@@ -87,17 +71,19 @@ class ForgotPasswordControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_forgot_password_invalid_email(): void
+    public function it_handle_fail(): void
     {
-        $response = $this->post(
+        $this->assertDatabaseMissing('users', $this->testingCredentials());
+
+        $this->post(
             action([
                 ForgotPasswordController::class,
                 'handle'
             ]),
-            ['email' => 'testing@gmail.com']
-        );
+            $this->testingCredentials()
+        )
+            ->assertInvalid(['email']);
 
-        $response
-            ->assertInvalid(['email' => "We can't find a user with that email address."]);
+        Notification::assertNothingSent();
     }
 }

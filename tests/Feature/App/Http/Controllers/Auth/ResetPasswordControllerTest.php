@@ -3,6 +3,7 @@
 namespace Tests\Feature\App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\SignInController;
 use Database\Factories\UserFactory;
 use Domain\Auth\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
@@ -17,11 +18,23 @@ class ResetPasswordControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private string $token;
+
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = UserFactory::new()->create();
+        $this->token = Password::createToken($this->user);
+    }
+
     /**
      * @test
      * @return void
      */
-    public function it_password_reset_page_success(): void
+    public function it_page_success(): void
     {
         $response = $this->get(
             action([
@@ -40,110 +53,28 @@ class ResetPasswordControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_password_reset_page_redirect_authorized_user(): void
+    public function it_handle_success(): void
     {
-        $user = UserFactory::new()->create();
+        $password = '1234567890';
+        $password_confirmation = '1234567890';
 
-        $this->actingAs($user);
-
-        $this->assertAuthenticatedAs($user);
-
-        $response = $this->get(
-            action([
-                ResetPasswordController::class,
-                'page'
+        Password::shouldReceive('reset')
+            ->once()
+            ->withSomeofArgs([
+                'email' => $this->user->email,
+                'password' => $password,
+                'password_confirmation' => $password_confirmation,
+                'token' => $this->token
             ])
-        );
+            ->andReturn(Password::PASSWORD_RESET);
 
-        $response
-            ->assertRedirect(route('home'));
-    }
+        $response = $this->post(action([ResetPasswordController::class, 'handle']), [
+            'email' => $this->user->email,
+            'password' => $password,
+            'password_confirmation' => $password_confirmation,
+            'token' => $this->token
+        ]);
 
-    /**
-     * @test
-     * @return void
-     */
-    public function it_password_reset_success(): void
-    {
-        Event::fake();
-
-        $user = UserFactory::new()->create();
-
-        $newPassword = '123456789';
-
-        $this->assertDatabaseHas('users', ['email' => $user->email]);
-
-        $response = $this->post(
-            action([
-                ResetPasswordController::class,
-                'handle'
-            ]),
-            [
-                'email' => $user->email,
-                'password' => $newPassword,
-                'password_confirmation' => $newPassword,
-                'token' => app('auth.password.broker')->createToken($user)
-            ]
-        );
-
-        Event::assertDispatched(PasswordReset::class);
-
-        $updatedUser = User::where('email', $user->email)->first();
-
-        $isValidPassword = Hash::check($newPassword, $updatedUser->password);
-
-        $this->assertTrue($isValidPassword);
-
-        $response
-            ->assertValid()
-            ->assertSessionHas('status', __(Password::PASSWORD_RESET));
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function it_password_reset_invalid_form_data(): void
-    {
-        $response = $this->post(
-            action([
-                ResetPasswordController::class,
-                'handle'
-            ]),
-            [
-                'email' => '',
-                'password' => '',
-                'token' => ''
-            ]
-        );
-
-        $response
-            ->assertInvalid(['email', 'password', 'token']);
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function it_password_reset_invalid_token(): void
-    {
-        $user = UserFactory::new()->create();
-        $newPassword = '123456789';
-
-        $response = $this->post(
-            action([
-                ResetPasswordController::class,
-                'handle'
-            ]),
-            [
-                'email' => $user->email,
-                'password' => $newPassword,
-                'password_confirmation' => $newPassword,
-                'token' => str()->random(10)
-            ]
-        );
-
-        $response
-            ->assertInvalid(['email' => __(PasswordBroker::INVALID_TOKEN)]);
+        $response->assertRedirect(action([SignInController::class, 'page']));
     }
 }

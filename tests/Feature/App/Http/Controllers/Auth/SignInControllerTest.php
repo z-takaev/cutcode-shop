@@ -15,7 +15,7 @@ class SignInControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_sign_in_page_success(): void
+    public function it_page_success(): void
     {
         $response = $this->get(
             action([
@@ -57,7 +57,7 @@ class SignInControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_login_success(): void
+    public function it_handle_success(): void
     {
         $password = '123456789';
 
@@ -88,29 +88,23 @@ class SignInControllerTest extends TestCase
      * @test
      * @return void
      */
-    public function it_login_invalid_password(): void
+    public function it_handle_fail(): void
     {
-        $user = UserFactory::new()->create([
+        $user = [
             'email' => 'testing@gmail.com',
-            'password' => bcrypt('123456789')
-        ]);
+            'password' => '1234567890'
+        ];
 
-        $response = $this->post(
+        $this->post(
             action([
                 SignInController::class,
                 'handle'
-            ]),
-            [
-                'email' => $user['email'],
-                'password' => '987654321'
-            ]
-        );
+            ], $user)
+        )->assertInvalid(['email']);
 
         $this->assertGuest();
-
-        $response
-            ->assertInvalid(['email' => 'The provided credentials do not match our records.']);
     }
+
 
     /**
      * @test
@@ -129,6 +123,16 @@ class SignInControllerTest extends TestCase
             );
 
         $this->assertGuest();
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function it_logout_guest_middleware_fail(): void
+    {
+        $this->delete(action([SignInController::class, 'logout']))
+            ->assertRedirect(route('home'));
     }
 
 }
