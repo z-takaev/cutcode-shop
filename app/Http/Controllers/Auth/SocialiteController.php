@@ -23,13 +23,17 @@ class SocialiteController extends Controller
 
     public function callback(string $driver): RedirectResponse
     {
+        if ($driver !== 'github') {
+            throw new DomainException('Драйвер не поддерживается');
+        }
+
         $socialiteUser = Socialite::driver($driver)->user();
 
         $user = User::updateOrCreate([
-            $driver . '_id' => $socialiteUser->id,
+            $driver . '_id' => $socialiteUser->getId(),
         ], [
-            'name' => $socialiteUser->name,
-            'email' => $socialiteUser->email,
+            'name' => $socialiteUser->getName(),
+            'email' => $socialiteUser->getEmail(),
             'password' => bcrypt(str()->random()),
         ]);
 

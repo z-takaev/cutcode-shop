@@ -6,11 +6,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SignInController;
 use Database\Factories\UserFactory;
 use Domain\Auth\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Passwords\PasswordBroker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
