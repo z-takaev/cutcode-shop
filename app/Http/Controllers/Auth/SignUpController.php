@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegistrationFormRequest;
 use Domain\Auth\Contracts\RegisterNewUserContract;
+use Domain\Auth\DTOs\NewUserDTO;
+use Illuminate\Support\Facades\Auth;
 
 class SignUpController extends Controller
 {
@@ -15,11 +17,15 @@ class SignUpController extends Controller
 
     public function handle(RegistrationFormRequest $request, RegisterNewUserContract $action)
     {
-        $action(
-            $request->get('name'),
-            $request->get('email'),
-            $request->get('password')
-        );
+//        $dto = new NewUserDTO(
+//            $request->get('name'),
+//            $request->get('email'),
+//            $request->get('password')
+//        );
+
+        $user = $action(NewUserDTO::fromRequest($request));
+
+        Auth::login($user);
 
         return redirect()->intended(route('home'));
     }
