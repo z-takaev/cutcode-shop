@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services\Telegram;
+namespace Tests\Unit\App\Services\Telegram;
 
 use Illuminate\Support\Facades\Http;
 use Services\Telegram\TelegramBotApi;
