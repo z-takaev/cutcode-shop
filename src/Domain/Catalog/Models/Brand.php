@@ -3,6 +3,8 @@
 namespace Domain\Catalog\Models;
 
 use App\Models\Product;
+use Domain\Catalog\Collections\BrandCollection;
+use Domain\Catalog\QueryBuilders\BrandQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,13 +17,6 @@ class Brand extends Model
     use HasSlug;
     use HasThumbnail;
 
-    public function scopeHomepage($query)
-    {
-        return $query->where('on_home_page', true)
-            ->orderBy('sorting')
-            ->limit(6);
-    }
-
     protected $fillable = ['slug', 'name', 'thumbnail', 'sorting', 'on_home_page'];
 
     protected function thumbnailDir(): string
@@ -32,5 +27,15 @@ class Brand extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function newEloquentBuilder($query): BrandQueryBuilder
+    {
+        return new BrandQueryBuilder($query);
+    }
+
+    public function newCollection(array $models = [])
+    {
+        return new BrandCollection($models);
     }
 }
