@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Product;
-use Domain\Catalog\Models\Brand;
+use Database\Factories\BrandFactory;
+use Database\Factories\CategoryFactory;
 use Domain\Catalog\Models\Category;
 use Illuminate\Database\Seeder;
 
@@ -17,9 +18,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Brand::factory(10)->create();
+        BrandFactory::new()
+            ->count(10)
+            ->create();
 
-        Category::factory(8)
+        CategoryFactory::new()
+            ->count(8)
             ->has(Product::factory(rand(1, 15)))
             ->create();
     }
