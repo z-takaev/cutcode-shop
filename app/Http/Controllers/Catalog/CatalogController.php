@@ -37,6 +37,7 @@ class CatalogController extends Controller
                 );
             })
             ->filtered()
+            ->sorted()
             ->paginate(9);
 
 

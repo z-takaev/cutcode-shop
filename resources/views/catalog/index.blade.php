@@ -22,7 +22,10 @@
         </div>
     </section>
 
-    <section class="mt-16 lg:mt-24">
+    <section
+        x-data
+        class="mt-16 lg:mt-24"
+    >
         <!-- Section heading -->
         <h2 class="text-lg lg:text-[42px] font-black">Каталог товаров</h2>
 
@@ -97,17 +100,26 @@
                         </div>
                         <div class="text-body text-xxs sm:text-xs">Найдено: {{ $products->total() }} товаров</div>
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+
+                    <div
+                        x-data
+                        class="flex flex-col sm:flex-row sm:items-center gap-3"
+                    >
                         <span class="text-body text-xxs sm:text-xs">Сортировать по</span>
-                        <form>
-                            <select class="form-select w-full h-12 px-4 rounded-lg border border-body/10 focus:border-pink focus:shadow-[0_0_0_3px_#EC4176] bg-white/5 text-white text-xxs sm:text-xs shadow-transparent outline-0 transition">
+                        <form x-ref="sortForm" method="GET" action="{{ route('catalog') }}">
+                            <select
+                                x-on:change="$refs.sortForm.submit()"
+                                name="sort"
+                                class="form-select w-full h-12 px-4 rounded-lg border border-body/10 focus:border-pink focus:shadow-[0_0_0_3px_#EC4176] bg-white/5 text-white text-xxs sm:text-xs shadow-transparent outline-0 transition"
+                            >
                                 <option value="" class="text-dark">умолчанию</option>
-                                <option value="price" class="text-dark">от дешевых к дорогим</option>
-                                <option value="-price" class="text-dark">от дорогих к дешевым</option>
-                                <option value="title" class="text-dark">наименованию</option>
+                                <option value="price" class="text-dark" @selected(request('sort') === 'price')>от дешевых к дорогим</option>
+                                <option value="-price" class="text-dark" @selected(request('sort') === '-price')>от дорогих к дешевым</option>
+                                <option value="name" class="text-dark" @selected(request('sort') === 'name')>наименованию</option>
                             </select>
                         </form>
                     </div>
+
                 </div>
 
                 <!-- Products list -->

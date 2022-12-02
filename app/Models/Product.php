@@ -47,6 +47,19 @@ class Product extends Model
             });
     }
 
+    public function scopeSorted($query)
+    {
+        $query->when(request('sort'), function (Builder $query) {
+            $column = request()->str('sort');
+
+            if ($column->contains(['price', 'name'])) {
+                $direction = $column->contains('-') ? 'DESC' : 'ASC';
+
+                $query->orderBy((string) $column->remove('-'), $direction);
+            }
+        });
+    }
+
     protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id', 'sorting', 'on_home_page'];
 
     protected function thumbnailDir(): string
