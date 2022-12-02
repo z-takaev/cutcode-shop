@@ -36,18 +36,7 @@ class CatalogController extends Controller
                     $category->id
                 );
             })
-            ->when(request('filters.brands'), function (Builder $query) {
-                $query->whereIn('brand_id', request('filters.brands'));
-            })
-            ->when(request('filters.price'), function (Builder $query) {
-                $query->whereBetween(
-                    'price',
-                    [
-                        request('filters.price.from', 0) * 100,
-                        request('filters.price.to', 100000) * 100,
-                    ]
-                );
-            })
+            ->filtered()
             ->paginate(9);
 
 
