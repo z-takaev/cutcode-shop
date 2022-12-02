@@ -25,6 +25,9 @@ class CatalogController extends Controller
             ->get();
 
         $products = Product::query()
+            ->when(request('s'), function (Builder $query) {
+                $query->whereFullText(['name', 'text'], request('s'));
+            })
             ->when($category->exists, function (Builder $query) use ($category) {
                 $query->whereRelation(
                     'categories',
