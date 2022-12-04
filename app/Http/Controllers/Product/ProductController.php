@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
+use Domain\Product\Models\Product;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -15,11 +14,18 @@ class ProductController extends Controller
             $alsoProducts = Product::query()
                 ->whereIn('id',  $alsoIds)
                 ->whereNot('id', $product->id)
+                ->limit(4)
                 ->get();
         }
 
         session()->put('also.' . $product->id, $product->id);
 
-        return view('product.index', compact('product', 'alsoProducts'));
+        $product->load('optionValues.option');
+
+        $options = $product->optionValues->mapToGroups(function($item) {
+            return [$item->option->title => $item];
+        });
+
+        return view('product.index', compact('product', 'options', 'alsoProducts'));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\App\Http\Controllers;
 
-use App\Models\Product;
 use Database\Factories\BrandFactory;
 use Database\Factories\CategoryFactory;
 use Database\Factories\ProductFactory;
