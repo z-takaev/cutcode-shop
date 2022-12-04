@@ -25,26 +25,16 @@ class Product extends Model
 
     public function scopeHomepage($query)
     {
-        return $query->where('on_home_page', true)
-                    ->orderBy('sorting')
-                    ->limit(10);
+        $query->where('on_home_page', true)
+                ->orderBy('sorting')
+                ->limit(10);
     }
 
     public function scopeFiltered($query)
     {
-        return $query
-            ->when(request('filters.brands'), function (Builder $q) {
-                $q->whereIn('brand_id', request('filters.brands'));
-            })
-            ->when(request('filters.price'), function (Builder $q) {
-                $q->whereBetween(
-                    'price',
-                    [
-                        request('filters.price.from', 0) * 100,
-                        request('filters.price.to', 100000) * 100,
-                    ]
-                );
-            });
+        foreach (filters() as $filter) {
+            $query = $filter->apply($query);
+        }
     }
 
     public function scopeSorted($query)
