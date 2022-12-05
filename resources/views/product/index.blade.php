@@ -2,12 +2,11 @@
 
 @section('content')
     <!-- Breadcrumbs -->
-{{--    <ul class="breadcrumbs flex flex-wrap gap-y-1 gap-x-4 mb-6">--}}
-{{--        <li><a href="index.html" class="text-body hover:text-pink text-xs">Главная</a></li>--}}
-{{--        <li><a href="catalog.html" class="text-body hover:text-pink text-xs">Каталог</a></li>--}}
-{{--        <li><a href="catalog.html" class="text-body hover:text-pink text-xs">Мыши</a></li>--}}
-{{--        <li><span class="text-body text-xs">SteelSeries Aerox 3 Snow</span></li>--}}
-{{--    </ul>--}}
+    <ul class="breadcrumbs flex flex-wrap gap-y-1 gap-x-4 mb-6">
+        <li><a href="{{ route('home') }}" class="text-body hover:text-pink text-xs">Главная</a></li>
+        <li><a href="{{ route('catalog') }}" class="text-body hover:text-pink text-xs">Каталог</a></li>
+        <li><span class="text-body text-xs">{{ $product->name }}</span></li>
+    </ul>
 
     <!-- Main product -->
     <section class="flex flex-col lg:flex-row gap-10 xl:gap-14 2xl:gap-20 mt-12">
@@ -126,14 +125,14 @@
     @endif
 
 
-    @if($alsoProducts ?? null)
+    @if($also)
         <!-- Watched products  -->
         <section class="mt-16 xl:mt-24">
             <h2 class="mb-12 text-lg lg:text-[42px] font-black">Просмотренные товары</h2>
             <!-- Products list -->
             <div
                 class="products grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-8 gap-y-8 lg:gap-y-10 2xl:gap-y-12">
-                @each('catalog.shared.product', $alsoProducts, 'item')
+                @each('product.shared.product', $also, 'item')
             </div>
         </section>
     @endif

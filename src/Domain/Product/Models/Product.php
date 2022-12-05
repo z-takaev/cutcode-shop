@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use Domain\Catalog\Facades\Sorter;
 use Domain\Catalog\Models\Brand;
 use Domain\Catalog\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,15 +40,7 @@ class Product extends Model
 
     public function scopeSorted($query)
     {
-        $query->when(request('sort'), function (Builder $query) {
-            $column = request()->str('sort');
-
-            if ($column->contains(['price', 'name'])) {
-                $direction = $column->contains('-') ? 'DESC' : 'ASC';
-
-                $query->orderBy((string) $column->remove('-'), $direction);
-            }
-        });
+        Sorter::run($query);
     }
 
     protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id', 'sorting', 'on_home_page'];

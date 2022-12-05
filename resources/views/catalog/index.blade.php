@@ -38,6 +38,8 @@
                     action="{{ route('catalog', $category) }}"
                     method="GET"
                 >
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+
                     @foreach(filters() as $filter)
                         @include($filter->view(), ['filter' => $filter])
                     @endforeach
@@ -59,12 +61,12 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-2">
-                            <a href="catalog.html" class="pointer-events-none inline-flex items-center justify-center w-10 h-10 rounded-md bg-card text-pink">
+                            <a href="{{ filter_url($category, ['view' => 'grid']) }}" class="{{ is_catalog_view('grid') ? 'pointer-events-none text-pink' : '' }} inline-flex items-center justify-center w-10 h-10 rounded-md bg-card">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 52 52">
                                     <path fill-rule="evenodd" d="M2.6 28.6h18.2a2.6 2.6 0 0 1 2.6 2.6v18.2a2.6 2.6 0 0 1-2.6 2.6H2.6A2.6 2.6 0 0 1 0 49.4V31.2a2.6 2.6 0 0 1 2.6-2.6Zm15.6 18.2v-13h-13v13h13ZM31.2 0h18.2A2.6 2.6 0 0 1 52 2.6v18.2a2.6 2.6 0 0 1-2.6 2.6H31.2a2.6 2.6 0 0 1-2.6-2.6V2.6A2.6 2.6 0 0 1 31.2 0Zm15.6 18.2v-13h-13v13h13ZM31.2 28.6h18.2a2.6 2.6 0 0 1 2.6 2.6v18.2a2.6 2.6 0 0 1-2.6 2.6H31.2a2.6 2.6 0 0 1-2.6-2.6V31.2a2.6 2.6 0 0 1 2.6-2.6Zm15.6 18.2v-13h-13v13h13ZM2.6 0h18.2a2.6 2.6 0 0 1 2.6 2.6v18.2a2.6 2.6 0 0 1-2.6 2.6H2.6A2.6 2.6 0 0 1 0 20.8V2.6A2.6 2.6 0 0 1 2.6 0Zm15.6 18.2v-13h-13v13h13Z" clip-rule="evenodd"/>
                                 </svg>
                             </a>
-                            <a href="catalog-list.html" class="inline-flex items-center justify-center w-10 h-10 rounded-md bg-card text-white hover:text-pink">
+                            <a href="{{ filter_url($category, ['view' => 'list']) }}" class="i{{ is_catalog_view('list') ? 'pointer-events-none text-pink' : '' }} inline-flex items-center justify-center w-10 h-10 rounded-md bg-card text-white hover:text-pink">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 52 52">
                                     <path fill-rule="evenodd" d="M7.224 4.875v4.694h37.555V4.875H7.224ZM4.877.181a2.347 2.347 0 0 0-2.348 2.347v9.389a2.347 2.347 0 0 0 2.348 2.347h42.25a2.347 2.347 0 0 0 2.347-2.347v-9.39A2.347 2.347 0 0 0 47.127.182H4.877Zm2.347 23.472v4.694h37.555v-4.694H7.224Zm-2.347-4.695a2.347 2.347 0 0 0-2.348 2.348v9.389a2.347 2.347 0 0 0 2.348 2.347h42.25a2.347 2.347 0 0 0 2.347-2.348v-9.388a2.347 2.347 0 0 0-2.347-2.348H4.877ZM7.224 42.43v4.695h37.555v-4.694H7.224Zm-2.347-4.694a2.347 2.347 0 0 0-2.348 2.347v9.39a2.347 2.347 0 0 0 2.348 2.346h42.25a2.347 2.347 0 0 0 2.347-2.347v-9.389a2.347 2.347 0 0 0-2.347-2.347H4.877Z" clip-rule="evenodd"/>
                                 </svg>
@@ -74,20 +76,21 @@
                     </div>
 
                     <div
-                        x-data
+                        x-data="{ sort: '{{ filter_url($category, ['sort' => request('sort')]) }}' }"
                         class="flex flex-col sm:flex-row sm:items-center gap-3"
                     >
                         <span class="text-body text-xxs sm:text-xs">Сортировать по</span>
                         <form x-ref="sortForm" method="GET" action="{{ route('catalog') }}">
                             <select
-                                x-on:change="$refs.sortForm.submit()"
+                                x-on:change="window.location.href = sort"
+                                x-model="sort"
                                 name="sort"
                                 class="form-select w-full h-12 px-4 rounded-lg border border-body/10 focus:border-pink focus:shadow-[0_0_0_3px_#EC4176] bg-white/5 text-white text-xxs sm:text-xs shadow-transparent outline-0 transition"
                             >
-                                <option value="" class="text-dark">умолчанию</option>
-                                <option value="price" class="text-dark" @selected(request('sort') === 'price')>от дешевых к дорогим</option>
-                                <option value="-price" class="text-dark" @selected(request('sort') === '-price')>от дорогих к дешевым</option>
-                                <option value="name" class="text-dark" @selected(request('sort') === 'name')>наименованию</option>
+                                <option value="{{ filter_url($category, ['sort' => '']) }}" class="text-dark">умолчанию</option>
+                                <option value="{{ filter_url($category, ['sort' => 'price']) }}" class="text-dark" @selected(request('sort') === 'price')>от дешевых к дорогим</option>
+                                <option value="{{ filter_url($category, ['sort' => '-price']) }}" class="text-dark" @selected(request('sort') === '-price')>от дорогих к дешевым</option>
+                                <option value="{{ filter_url($category, ['sort' => 'name']) }}" class="text-dark" @selected(request('sort') === 'name')>наименованию</option>
                             </select>
                         </form>
                     </div>
@@ -95,8 +98,8 @@
                 </div>
 
                 <!-- Products list -->
-                <div class="products grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-6 2xl:gap-x-8 gap-y-8 lg:gap-y-10 2xl:gap-y-12">
-                    @each('catalog.shared.product', $products, 'item')
+                <div class="products grid grid-cols-1 gap-y-8 {{ is_catalog_view('grid') ?  'sm:grid-cols-2 xl:grid-cols-3 gap-x-6 2xl:gap-x-8 lg:gap-y-10 2xl:gap-y-12' : ''}}">
+                    @each('product.shared.product' . (is_catalog_view('list') ? '-list' : ''), $products, 'item')
                 </div>
 
                 <!-- Page pagination -->
