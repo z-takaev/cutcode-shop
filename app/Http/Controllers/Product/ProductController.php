@@ -12,21 +12,17 @@ class ProductController extends Controller
     public function __invoke(Product $product): View
     {
         $also = Product::query()
-            ->when(session()->has('also'), function (Builder $q) use ($product) {
-               $q->whereIn('id', session('also'))
-                    ->whereNot('id', $product->id)
-                    ->limit(4);
-            })
+            ->also($product)
             ->get();
 
         session()->put('also.' . $product->id, $product->id);
 
         $product->load('optionValues.option');
 
-        $options = $product->optionValues->mapToGroups(function($item) {
-            return [$item->option->title => $item];
-        });
-
-        return view('product.show', compact('product', 'options', 'also'));
+        return view('product.show', [
+            'product' => $product,
+            'options' => $product->optionValues->keyValues(),
+            'also' => $also
+        ]);
     }
 }

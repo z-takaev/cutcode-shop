@@ -11,7 +11,7 @@ class HomeController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $products = Product::homepage()->get();
+        $products = Product::homePage()->get();
         $brands = BrandViewModel::make()->homePage();
         $categories = Category::all();
 

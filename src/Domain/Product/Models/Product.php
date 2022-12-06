@@ -7,6 +7,7 @@ use Carbon\CarbonInterval;
 use Domain\Catalog\Facades\Sorter;
 use Domain\Catalog\Models\Brand;
 use Domain\Catalog\Models\Category;
+use Domain\Product\QueryBuilders\ProductQueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,7 +34,8 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'price' => PriceCast::class
+        'price' => PriceCast::class,
+        'json_properties' => 'array'
     ];
 
     protected static function boot()
@@ -45,23 +47,9 @@ class Product extends Model
         });
     }
 
-    public function scopeHomepage($query)
+    public function newEloquentBuilder($query): ProductQueryBuilder
     {
-        $query->where('on_home_page', true)
-                ->orderBy('sorting')
-                ->limit(10);
-    }
-
-    public function scopeFiltered($query)
-    {
-        foreach (filters() as $filter) {
-            $query = $filter->apply($query);
-        }
-    }
-
-    public function scopeSorted($query)
-    {
-        Sorter::run($query);
+        return new ProductQueryBuilder($query);
     }
 
     protected function thumbnailDir(): string

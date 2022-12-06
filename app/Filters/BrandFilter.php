@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 
 class BrandFilter extends AbstractFilter
 {
-
     public function title(): string
     {
         return 'Бренд';

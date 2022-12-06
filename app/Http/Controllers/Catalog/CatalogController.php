@@ -17,21 +17,11 @@ class CatalogController extends Controller
             ->get();
 
         $products = Product::query()
-            ->when(request('s'), function (Builder $query) {
-                $query->whereFullText(['name', 'text'], request('s'));
-            })
-            ->when($category->exists, function (Builder $query) use ($category) {
-                $query->whereRelation(
-                    'categories',
-                    'categories.id',
-                    '=',
-                    $category->id
-                );
-            })
+            ->search()
+            ->fromCategory($category)
             ->filtered()
             ->sorted()
             ->paginate(9);
-
 
         return view('catalog.index', compact('category','categories', 'products'));
     }
