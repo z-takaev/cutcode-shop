@@ -2,10 +2,11 @@
 
 namespace Domain\Product\Models;
 
+use App\Jobs\ProductJsonProperties;
+use Carbon\CarbonInterval;
 use Domain\Catalog\Facades\Sorter;
 use Domain\Catalog\Models\Brand;
 use Domain\Catalog\Models\Category;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,9 +21,29 @@ class Product extends Model
     use HasSlug;
     use HasThumbnail;
 
+    protected $fillable = [
+        'slug',
+        'name',
+        'thumbnail',
+        'price',
+        'brand_id',
+        'sorting',
+        'on_home_page',
+        'json_properties'
+    ];
+
     protected $casts = [
         'price' => PriceCast::class
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function(Product $product) {
+            ProductJsonProperties::dispatch($product)->delay(CarbonInterval::seconds(10));
+        });
+    }
 
     public function scopeHomepage($query)
     {
@@ -42,8 +63,6 @@ class Product extends Model
     {
         Sorter::run($query);
     }
-
-    protected $fillable = ['slug', 'name', 'thumbnail', 'price', 'brand_id', 'sorting', 'on_home_page'];
 
     protected function thumbnailDir(): string
     {
