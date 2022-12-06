@@ -3,26 +3,18 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\ViewModels\ProductViewModel;
 use Domain\Product\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 
 class ProductController extends Controller
 {
-    public function __invoke(Product $product): View
+    public function __invoke(Product $product): ProductViewModel
     {
-        $also = Product::query()
-            ->also($product)
-            ->get();
-
         session()->put('also.' . $product->id, $product->id);
 
-        $product->load('optionValues.option');
+        return (new ProductViewModel($product))->view('product.show');
 
-        return view('product.show', [
-            'product' => $product,
-            'options' => $product->optionValues->keyValues(),
-            'also' => $also
-        ]);
     }
 }

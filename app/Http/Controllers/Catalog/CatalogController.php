@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Catalog;
 
 use App\Http\Controllers\Controller;
+use App\ViewModels\CatalogViewModel;
 use Domain\Catalog\Models\Category;
 use Domain\Product\Models\Product;
 use Illuminate\Contracts\View\View;
@@ -10,19 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CatalogController extends Controller
 {
-    public function __invoke(Category $category): View
+    public function __invoke(Category $category): CatalogViewModel
     {
-        $categories = Category::query()
-            ->has('products')
-            ->get();
-
-        $products = Product::query()
-            ->search()
-            ->fromCategory($category)
-            ->filtered()
-            ->sorted()
-            ->paginate(9);
-
-        return view('catalog.index', compact('category','categories', 'products'));
+        return (new CatalogViewModel($category))->view('catalog.index');
     }
 }
