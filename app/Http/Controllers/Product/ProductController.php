@@ -27,6 +27,6 @@ class ProductController extends Controller
             return [$item->option->title => $item];
         });
 
-        return view('product.index', compact('product', 'options', 'also'));
+        return view('product.show', compact('product', 'options', 'also'));
     }
 }
