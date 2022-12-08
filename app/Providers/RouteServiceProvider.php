@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RouteServiceProvider extends ServiceProvider
 {
     protected array $registrars = [
+        \App\Routing\CartRegistrar::class,
         AppRegistrar::class,
         AuthRegistrar::class,
         CatalogRegistrar::class,

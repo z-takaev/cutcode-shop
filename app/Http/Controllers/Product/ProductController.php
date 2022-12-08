@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Product;
 use App\Http\Controllers\Controller;
 use App\ViewModels\ProductViewModel;
 use Domain\Product\Models\Product;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 
 class ProductController extends Controller
 {
