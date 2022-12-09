@@ -5,6 +5,7 @@ namespace Domain\Cart;
 use Domain\Cart\Contracts\CartIdentityStorageContract;
 use Domain\Cart\Models\Cart;
 use Domain\Cart\Models\CartItem;
+use Domain\Cart\StorageIdentities\FakeIdentityStorage;
 use Domain\Product\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,10 @@ class CartManager
         protected CartIdentityStorageContract $identityStorage
     )
     {
+    }
+
+    public static function fake(): void {
+        app()->bind(CartIdentityStorageContract::class, FakeIdentityStorage::class);
     }
 
     private function cacheKey(): string
@@ -51,6 +56,13 @@ class CartManager
         sort($optionValues);
 
         return implode(';', $optionValues);
+    }
+
+    public function updateStorageId(string $old, string $current): void
+    {
+        Cart::query()
+            ->where('storage_id', $old)
+            ->update($this->storageData($current));
     }
 
     public function add(Product $product, int $quantity = 1, array $optionValues = []): Model|Builder
@@ -94,7 +106,9 @@ class CartManager
 
     public function truncate(): void
     {
-        $this->get()?->delete();
+        if ($this->get()) {
+            $this->get()->delete();
+        }
 
         $this->forgetCache();
     }
@@ -113,10 +127,14 @@ class CartManager
 
     public function cartItems(): Collection
     {
-        return $this->get()?->cartItems ?? collect([]);
+        if (!$this->get()) {
+            return collect([]);
+        }
+
+        return $this->get()->cartItems;
     }
 
-    public function amount()
+    public function amount(): Price
     {
         return Price::make(
             $this->cartItems()->sum(fn($item) => $item->amount->raw())

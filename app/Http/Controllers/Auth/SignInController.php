@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthenticateFormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Support\SessionRegenerator;
 
 class SignInController extends Controller
 {
@@ -17,7 +18,7 @@ class SignInController extends Controller
     public function handle(AuthenticateFormRequest $request)
     {
         if (Auth::attempt($request->validated())) {
-            $request->session()->regenerate();
+            SessionRegenerator::run();
 
             return redirect()->intended(route('home'));
         }
@@ -29,13 +30,9 @@ class SignInController extends Controller
             ->onlyInput('email');
     }
 
-    public function logout(Request $request)
+    public function logout(): \Illuminate\Http\RedirectResponse
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        SessionRegenerator::run(fn() => Auth::logout());
 
         return redirect()->route('home');
     }
